@@ -52,7 +52,7 @@ public class DataServer
 
 				x += deltax * 0.1;
 				y += deltay * 0.1;
-				
+
 				Point point = MouseInfo.getPointerInfo().getLocation();
 				robot.mouseMove(point.x + (int)(x * 10), point.y + (int)(y * 10));
 				deltax = fX.floatValue();
@@ -90,13 +90,13 @@ public class DataServer
 					float vy = fY.floatValue();
 
 					System.out.println("vx:" + vx + " vy:" + vy);
-					
+
 					Point point = MouseInfo.getPointerInfo().getLocation();
 					robot.mouseMove(point.x + (int)(vx / 50), point.y + (int)(vy / 50));
 				}
 				else if(description.equals("CLICK")) {
 					long duration = Long.parseLong(data.substring(
-								locationDescription + 1, data.length()));
+							locationDescription + 1, data.length()));
 					int mask = InputEvent.BUTTON1_DOWN_MASK;
 					try{
 						robot.mousePress(mask);
@@ -109,8 +109,8 @@ public class DataServer
 				}
 				else if(description.equals("RIGHT")) {
 					long duration = Long.parseLong(data.substring(
-								locationDescription + 1, data.length()));
-					int mask = InputEvent.BUTTON2_DOWN_MASK;
+							locationDescription + 1, data.length()));
+					int mask = InputEvent.BUTTON3_DOWN_MASK;
 					try{
 						robot.mousePress(mask);
 						Thread.sleep(duration);
@@ -119,6 +119,19 @@ public class DataServer
 					catch(InterruptedException e) {
 						System.out.println("sleep interrupted.");
 					}
+				}
+				else if(description.equals("SCOLL")){
+					int locationB = data.indexOf(" ", locationDescription);
+					String sX = data.substring(locationDescription + 1, locationB);
+					String sY = data.substring(locationB + 1, data.length());
+					Float fX = new Float(sX);
+					Float fY = new Float(sY);
+					float vx = fX.floatValue();
+					float vy = fY.floatValue();
+
+					System.out.println("vx:" + vx + " vy:" + vy);
+
+					robot.mouseWheel((int)(vy/50));
 				}
 			}
 		}
@@ -139,20 +152,20 @@ public class DataServer
 			try{
 				/* Whether this should be put into a loop ? */
 				System.out.println(
-					"Waiting for a connection on port 1765."
-					);
+						"Waiting for a connection on port 1777."
+				);
 				/* Should this socket be changed to one that is not hard-coded? */
 				ServerSocket serverSock;
 				Socket connectionSock;
 				BufferedReader clientInput;
-				serverSock = 
-					new ServerSocket(1765);
+				serverSock =
+						new ServerSocket(1777);
 				connectionSock = serverSock.accept();
 				System.out.println("Acceptance Success.");
-				clientInput = 
-					new BufferedReader(new InputStreamReader(
-							connectionSock.getInputStream()
-								));
+				clientInput =
+						new BufferedReader(new InputStreamReader(
+								connectionSock.getInputStream()
+						));
 				/*
 					*DataOutputStream clientOutput =
 					*    new DataOutputStream(
