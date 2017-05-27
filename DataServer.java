@@ -37,9 +37,10 @@ public class DataServer
 				if(data == null)
 					return ;
 				/* Do something with these data */
-				int locationF = data.indexOf(" ", 0);
+				int locationM = data.indexOf(":", 0);
+				int locationF = data.indexOf(" ", locationM + 1);
 				int locationS = data.indexOf(" ", locationF + 1);
-				String sX = data.substring(0, locationF);
+				String sX = data.substring(locationM + 1, locationF);
 				String sY = data.substring(locationF + 1, locationS);
 				String sZ = data.substring(locationS + 1, data.length());
 				/* Parse these three string to Float */
@@ -50,8 +51,19 @@ public class DataServer
 				deltay = (deltay + fY.floatValue()) / 2;
 				deltaz = (deltaz + fZ.floatValue()) / 2;
 
-				x += deltax * 0.1;
-				y += deltay * 0.1;
+				float tmpx, tmpy;
+
+				tmpx = x + (float)(deltax * 0.1);
+				tmpy = y + (float)(deltay * 0.1);
+
+				if((x * tmpx) < 0)
+					x = 0;
+				else
+					x = tmpx;
+				if((y * tmpy) < 0)
+					y = 0;
+				else
+					y = tmpy;
 
 				Point point = MouseInfo.getPointerInfo().getLocation();
 				robot.mouseMove(point.x + (int)(x * 10), point.y + (int)(y * 10));
