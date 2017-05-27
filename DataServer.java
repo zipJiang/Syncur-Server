@@ -49,32 +49,33 @@ public class DataServer
 				String sY = data.substring(locationF + 1, locationS);
 				String sZ = data.substring(locationS + 1, data.length());
 				/* Parse these three string to Float */
-				Float fX = new Float(sX);
-				Float fY = new Float(sY);
-				Float fZ = new Float(sZ);
-				deltax = (deltax + fX.floatValue()) / 2;
-				deltay = (deltay + fY.floatValue()) / 2;
-				deltaz = (deltaz + fZ.floatValue()) / 2;
+				Float aX = new Float(sX);
+				Float aY = new Float(sY);
+				Float aZ = new Float(sZ);
 
-				float tmpx, tmpy;
+				float diff_x = aX - deltax;
+				float diff_y = aY - deltay;
+				float diff_z = aZ - deltaz;
+				double diff = Math.sqrt((double)(diff_x *diff_x + diff_y * diff_y + diff_z * diff_z));
 
-				tmpx = x + (float)(deltax * 0.1);
-				tmpy = y + (float)(deltay * 0.1);
-
-				if((x * tmpx) < 0)
+				if(diff < 0.05){
 					x = 0;
-				else
-					x = tmpx;
-				if((y * tmpy) < 0)
 					y = 0;
-				else
-					y = tmpy;
+				}
+				else {
+					deltax = (deltax + aX.floatValue()) / 2;
+					deltay = (deltay + aY.floatValue()) / 2;
+					deltaz = (deltaz + aZ.floatValue()) / 2;
+
+					x += (float) (deltax * 0.1);
+					y += (float) (deltay * 0.1);
+				}
 
 				Point point = MouseInfo.getPointerInfo().getLocation();
 				robot.mouseMove(point.x + (int)(x * 10), point.y + (int)(y * 10));
-				deltax = fX.floatValue();
-				deltay = fY.floatValue();
-				deltaz = fZ.floatValue();
+				deltax = aX.floatValue();
+				deltay = aY.floatValue();
+				deltaz = aZ.floatValue();
 			}
 		}
 		catch(IOException e){
