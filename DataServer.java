@@ -20,7 +20,7 @@ import java.lang.Thread;
 
 public class DataServer
 {
-
+	static boolean connect = false;
 	public static void dataRead(BufferedReader bfr) {
 		System.out.println("Sensor Mode Identified.");
 		try {
@@ -33,6 +33,11 @@ public class DataServer
 			Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 			System.out.println("Dimension:" + d);
 			while(true) {
+				if(bfr == null){
+					System.out.println("The connection is over");
+					connect = false;
+					return;
+				}
 				String data = bfr.readLine();
 				if(data == null)
 					return ;
@@ -74,10 +79,12 @@ public class DataServer
 		}
 		catch(IOException e){
 			System.out.println("Data processing done.");
+			connect = false;
 			return ;
 		}
 		catch(AWTException e) {
 			System.out.println("Robot Failure.");
+			connect = false;
 			return ;
 		}
 	}
@@ -89,6 +96,11 @@ public class DataServer
 			Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 			System.out.println("Dimension:" + d);
 			while(true) {
+				if(bfr == null){
+					System.out.println("The connection is over");
+					connect = false;
+					return;
+				}
 				String data = bfr.readLine();
 				int locationDescription = data.indexOf(":", 0);
 				String description = data.substring(0, locationDescription);
@@ -149,10 +161,12 @@ public class DataServer
 		}
 		catch(IOException e) {
 			System.out.println("Data processing done.");
+			connect = false;
 			return ;
 		}
 		catch(AWTException e) {
 			System.out.println("Robot Failure.");
+			connect = false;
 			return ;
 		}
 	}
@@ -161,6 +175,7 @@ public class DataServer
 	{
 		/* This acceptance part should be put inside a loop*/
 		while(true) {
+			connnect = false;
 			try{
 				/* Whether this should be put into a loop ? */
 				System.out.println(
@@ -173,6 +188,7 @@ public class DataServer
 				serverSock =
 						new ServerSocket(1777);
 				connectionSock = serverSock.accept();
+				connect = true;
 				System.out.println("Acceptance Success.");
 				clientInput =
 						new BufferedReader(new InputStreamReader(
@@ -187,10 +203,12 @@ public class DataServer
 						"Connection made, waiting for client " + "to inform its mode.");
 				/* write a loop to readline */
 				String modeIndicator = clientInput.readLine();
-				if(modeIndicator.charAt(0) == 'S')
+				if(modeIndicator.charAt(0) == 'S') {
 					dataRead(clientInput);
-				else if(modeIndicator.charAt(0) == 'T')
+				}
+				else if(modeIndicator.charAt(0) == 'T') {
 					touchRead(clientInput);
+				}
 				/*
 				*String replyText =
 				*    "Welcome, " + clientText + ", Today is " + now.toString() + "\n";
@@ -206,6 +224,9 @@ public class DataServer
 			}
 			catch(IOException e) {
 				System.out.println("IO failed.");
+			}
+			catch(NullPointerException e){
+				System.out.println("There is null pointer");
 			}
 		}
 	}
