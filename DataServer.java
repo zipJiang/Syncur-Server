@@ -175,7 +175,7 @@ public class DataServer
 	{
 		/* This acceptance part should be put inside a loop*/
 		while(true) {
-			connnect = false;
+			connect = false;
 			try{
 				/* Whether this should be put into a loop ? */
 				System.out.println(
