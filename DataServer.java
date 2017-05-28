@@ -1,6 +1,5 @@
 import java.util.Date;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.io.DataOutputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -20,7 +19,6 @@ import java.lang.Thread;
 
 public class DataServer
 {
-	static boolean connect = false;
 	public static void dataRead(BufferedReader bfr) {
 		System.out.println("Sensor Mode Identified.");
 		try {
@@ -35,7 +33,6 @@ public class DataServer
 			while(true) {
 				if(bfr == null){
 					System.out.println("The connection is over");
-					connect = false;
 					return;
 				}
 				String data = bfr.readLine();
@@ -53,22 +50,19 @@ public class DataServer
 				Float aY = new Float(sY);
 				Float aZ = new Float(sZ);
 
-				float diff_x = aX - deltax;
-				float diff_y = aY - deltay;
-				float diff_z = aZ - deltaz;
+				float diff_x = aX.floatValue() - deltax;
+				float diff_y = aY.floatValue() - deltay;
+				float diff_z = aZ.floatValue() - deltaz;
 				double diff = Math.sqrt((double)(diff_x *diff_x + diff_y * diff_y + diff_z * diff_z));
 
-				if(diff < 0.05){
+				if(diff < 0.5){
 					x = 0;
 					y = 0;
 				}
 				else {
-					deltax = (deltax + aX.floatValue()) / 2;
-					deltay = (deltay + aY.floatValue()) / 2;
-					deltaz = (deltaz + aZ.floatValue()) / 2;
 
-					x += (float) (deltax * 0.1);
-					y += (float) (deltay * 0.1);
+					x += (float)(deltax * 0.1);
+					y += (float)(deltay * 0.1);
 				}
 
 				Point point = MouseInfo.getPointerInfo().getLocation();
@@ -80,12 +74,10 @@ public class DataServer
 		}
 		catch(IOException e){
 			System.out.println("Data processing done.");
-			connect = false;
 			return ;
 		}
 		catch(AWTException e) {
 			System.out.println("Robot Failure.");
-			connect = false;
 			return ;
 		}
 	}
@@ -99,7 +91,6 @@ public class DataServer
 			while(true) {
 				if(bfr == null){
 					System.out.println("The connection is over");
-					connect = false;
 					return;
 				}
 				String data = bfr.readLine();
@@ -162,12 +153,10 @@ public class DataServer
 		}
 		catch(IOException e) {
 			System.out.println("Data processing done.");
-			connect = false;
 			return ;
 		}
 		catch(AWTException e) {
 			System.out.println("Robot Failure.");
-			connect = false;
 			return ;
 		}
 	}
@@ -176,20 +165,29 @@ public class DataServer
 	{
 		/* This acceptance part should be put inside a loop*/
 		while(true) {
-			connect = false;
+			ServerSocket serverSock = null;
+			Socket connectionSock = null;
+			BufferedReader clientInput = null;
+			InetAddress ia=null;
+			try {
+				ia=ia.getLocalHost();
+
+				String localname = ia.getHostName();
+				String localip = ia.getHostAddress();
+				System.out.println("The name of the host is:" + localname);
+				System.out.println("The IP of the host is:" + localip);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			try{
 				/* Whether this should be put into a loop ? */
 				System.out.println(
-						"Waiting for a connection on port 1777."
+						"Waiting for a connection on port 1700."
 				);
 				/* Should this socket be changed to one that is not hard-coded? */
-				ServerSocket serverSock;
-				Socket connectionSock;
-				BufferedReader clientInput;
 				serverSock =
-						new ServerSocket(1777);
+						new ServerSocket(1700);
 				connectionSock = serverSock.accept();
-				connect = true;
 				System.out.println("Acceptance Success.");
 				clientInput =
 						new BufferedReader(new InputStreamReader(
@@ -219,15 +217,20 @@ public class DataServer
 				/*
 				*clientOutput.close();
 				*/
-				clientInput.close();
-				connectionSock.close();
-				serverSock.close();
 			}
 			catch(IOException e) {
 				System.out.println("IO failed.");
 			}
 			catch(NullPointerException e){
 				System.out.println("There is null pointer");
+			}
+			try {
+				clientInput.close();
+				connectionSock.close();
+				serverSock.close();
+			}
+			catch(IOException e) {
+				System.out.println("I can't handle that");
 			}
 		}
 	}
