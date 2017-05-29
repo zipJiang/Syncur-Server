@@ -150,23 +150,27 @@ public class DataServer
 					robot.mouseWheel((int)(vy/50));
 				}
 				else if(description.equals("DRAG")){
-                    int locationB = data.indexOf(" ", locationDescription);
-                    int mask = InputEvent.BUTTON1_DOWN_MASK;
-                    String sX = data.substring(locationDescription + 1, locationB);
-                    String sY = data.substring(locationB + 1, data.length());
-                    Float fX = new Float(sX);
-                    Float fY = new Float(sY);
-                    float vx = fX.floatValue();
-                    float vy = fY.floatValue();
+					int locationB = data.indexOf(" ", locationDescription);
+					int mask = InputEvent.BUTTON1_DOWN_MASK;
+					String sX = data.substring(locationDescription + 1, locationB);
+					String sY = data.substring(locationB + 1, data.length());
+					Float fX = new Float(sX);
+					Float fY = new Float(sY);
+					float vx = fX.floatValue();
+					float vy = fY.floatValue();
 
-                    System.out.println("vx:" + vx + " vy:" + vy);
+					System.out.println("vx:" + vx + " vy:" + vy);
 
-                    robot.mousePress(mask);
-                    robot.delay(10);
-                    Point point = MouseInfo.getPointerInfo().getLocation();
-                    robot.mouseMove(point.x + (int)(vx / 50), point.y + (int)(vy / 50));
-                    robot.mouseRelease(mask);
-                }
+					robot.mousePress(mask);
+					//robot.delay(10);
+					Point point = MouseInfo.getPointerInfo().getLocation();
+					robot.mouseMove(point.x + (int)(vx / 50), point.y + (int)(vy / 50));
+					//robot.mouseRelease(mask);
+				}
+				else if(description.equals("RELEASE")){
+					int mask = InputEvent.BUTTON1_DOWN_MASK;
+					robot.mouseRelease(mask);
+				}
 			}
 		}
 		catch(IOException e) {
